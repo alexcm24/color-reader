@@ -1,0 +1,12 @@
+[
+  { "name": "white", "hex": "#ffffff" },
+  { "name": "black", "hex": "#000000" },
+  { "name": "red", "hex": "#ff0000" },
+  { "name": "green", "hex": "#00ff00" },
+  { "name": "blue", "hex": "#0000ff" },
+  { "name": "light blue", "hex": "#95d0fc" },
+  { "name": "dark teal", "hex": "#014d4e" },
+  { "name": "warm gray", "hex": "#9b9b7a" },
+  { "name": "peach", "hex": "#ffb07c" },
+  { "name": "olive", "hex": "#6b8f00" }
+]
