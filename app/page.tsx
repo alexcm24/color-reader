@@ -25,6 +25,8 @@ export default function HomePage() {
     if (!f) return;
     const url = URL.createObjectURL(f);
     setImgUrl(url);
+    setPalette([]);
+    setHover(null);
   }
 
   // Draw image to canvas (downscale to max 900px)
@@ -41,13 +43,13 @@ export default function HomePage() {
       const c = canvasRef.current!;
       c.width = w; c.height = h;
       const ctx = c.getContext("2d")!;
+      ctx.clearRect(0, 0, w, h);
       ctx.drawImage(img, 0, 0, w, h);
     };
     img.src = imgUrl;
     imgRef.current = img;
   }, [imgUrl]);
 
-  // Sampling pixels (every 'step' pixels)
   function sample(step = 4): number[] {
     const c = canvasRef.current;
     if (!c) return [];
@@ -88,72 +90,100 @@ export default function HomePage() {
     const x = Math.floor(((e.clientX - rect.left) / rect.width) * c.width);
     const y = Math.floor(((e.clientY - rect.top) / rect.height) * c.height);
     const ctx = c.getContext("2d")!;
-    const { data, width } = ctx.getImageData(x, y, 1, 1);
+    const { data } = ctx.getImageData(x, y, 1, 1);
     const rgb: RGB = [data[0], data[1], data[2]];
     const nearest = nearestNamedColor(rgb, names);
     setHover({ rgb, name: nearest.name });
   }
 
   return (
-    <main className="mx-auto max-w-5xl p-6 space-y-6">
-      <h1 className="text-2xl font-semibold">Color Reader</h1>
+    <main className="min-h-screen bg-gradient-to-b from-white to-neutral-100 dark:from-neutral-950 dark:to-neutral-900">
+      <div className="mx-auto max-w-6xl px-5 py-8 space-y-6">
+        {/* Header */}
+        <header className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl md:text-2xl font-semibold tracking-tight">Color Reader</h1>
+            <p className="text-neutral-600 dark:text-neutral-400 text-base md:text-sm">
+              Upload an image, hover to sample a pixel, and extract a named color palette.
+            </p>
+          </div>
+        </header>
 
-      <div className="flex items-center gap-3">
-        <input type="file" accept="image/*" onChange={onFile} />
-        <label className="text-sm">Clusters (K):</label>
-        <input
-          type="number" min={3} max={10} value={k}
-          onChange={e => setK(parseInt(e.target.value || "6", 10))}
-          className="w-16 border rounded px-2 py-1 text-sm"
-        />
-        <button
-          onClick={extractPalette}
-          className="ml-2 px-3 py-2 text-sm border rounded-md"
-          disabled={!imgUrl}
-        >
-          Extract Palette
-        </button>
-      </div>
-
-      <div className="grid md:grid-cols-3 gap-6">
-        <div className="md:col-span-2">
-          <div className="relative">
-            <canvas
-              ref={canvasRef}
-              className="w-full rounded-lg border"
-              onMouseMove={onMouseMove}
+        {/* Controls */}
+        <section className="rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-white/70 dark:bg-neutral-900/70 p-4 shadow-sm backdrop-blur">
+          <div className="flex flex-wrap items-center gap-3">
+            <input
+              type="file"
+              accept="image/*"
+              onChange={onFile}
+              className="text-sm"
             />
-            {hover && (
-              <div
-                className="absolute left-3 top-3 px-3 py-2 rounded-md border bg-white/80 backdrop-blur text-sm shadow"
-                style={{ color: "#111" }}
-              >
-                <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
+              <label className="text-sm text-neutral-600 dark:text-neutral-400">Clusters (K)</label>
+              <input
+                type="number"
+                min={3}
+                max={10}
+                value={k}
+                onChange={e => setK(parseInt(e.target.value || "6", 10))}
+                className="w-20 rounded-lg border bg-transparent px-2 py-1 text-sm"
+              />
+            </div>
+            <button
+              onClick={extractPalette}
+              disabled={!imgUrl}
+              className="rounded-lg border px-3 py-2 text-sm font-medium hover:bg-neutral-50 dark:hover:bg-neutral-800 disabled:opacity-50"
+            >
+              Extract Palette
+            </button>
+          </div>
+        </section>
+
+        {/* Main grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
+          {/* Canvas card */}
+          <section className="md:col-span-2">
+            <div className="relative rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 shadow-sm overflow-hidden">
+              <canvas
+                ref={canvasRef}
+                className="w-full h-auto block"
+                onMouseMove={onMouseMove}
+              />
+              {/* Hover pill */}
+              {hover && (
+                <div className="absolute left-3 top-3 flex items-center gap-2 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white/90 dark:bg-neutral-900/90 px-3 py-2 shadow-sm backdrop-blur">
                   <div
-                    className="h-6 w-6 rounded border"
+                    className="h-5 w-5 rounded-md border border-black/10"
                     style={{ backgroundColor: rgbToHex(hover.rgb) }}
                   />
-                  <div>
+                  <div className="text-sm md:text-xs">
                     <div className="font-medium">{hover.name}</div>
-                    <div className="text-xs text-neutral-600">
+                    <div className="text-neutral-600 dark:text-neutral-400">
                       {rgbToHex(hover.rgb)} · rgb({hover.rgb.map(Math.round).join(", ")})
                     </div>
                   </div>
                 </div>
-              </div>
+              )}
+            </div>
+            {!imgUrl && (
+              <p className="mt-2 text-sm text-neutral-500">
+                Upload an image to begin.
+              </p>
             )}
-          </div>
-          {!imgUrl && <p className="text-sm text-neutral-500 mt-2">Upload an image to begin.</p>}
-        </div>
+          </section>
 
-        <div className="space-y-2">
-          <h2 className="text-lg font-medium">Palette</h2>
-          {palette.length === 0 && <p className="text-sm text-neutral-500">No palette yet. Click “Extract Palette”.</p>}
-          <div className="space-y-2">
-            {palette.map((p, i) => (
-              <ColorSwatch key={i} rgb={p.rgb} name={p.name} />
-            ))}
-          </div>
+          {/* Palette sidebar */}
+          <aside className="space-y-3">
+            <h2 className="text-lg font-medium">Palette</h2>
+            {palette.length === 0 && (
+              <p className="text-sm text-neutral-500">No palette yet. Click “Extract Palette”.</p>
+            )}
+            <div className="space-y-3">
+              {palette.map((p, i) => (
+                <ColorSwatch key={i} rgb={p.rgb} name={p.name} />
+              ))}
+            </div>
+          </aside>
         </div>
       </div>
     </main>
