@@ -1,36 +1,65 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Color Reader
 
-## Getting Started
+An accessible web app that identifies and names the dominant colors in any uploaded image. Built for people with color vision deficiencies or anyone who wants to quickly extract a color palette from a photo.
 
-First, run the development server:
+Upload an image, and the app returns the top colors with their names, hex codes, and a visual swatch for each one.
+
+**Live demo:** _coming soon_
+
+---
+
+## Features
+
+- Upload any image and extract the dominant colors
+- Color identification using k-means clustering in LAB color space for perceptual accuracy
+- Human-readable color names matched via LAB delta-E distance (not just hex guessing)
+- Clean, accessible UI built with Tailwind CSS
+- Fully client-friendly Next.js architecture
+
+---
+
+## Tech Stack
+
+| Layer | Technology |
+|---|---|
+| Framework | Next.js 15, TypeScript |
+| Styling | Tailwind CSS |
+| Color Science | k-means clustering, CIE LAB color space, delta-E matching |
+
+---
+
+## How It Works
+
+1. The user uploads an image via the browser.
+2. Pixel data is sampled and converted from RGB to CIE LAB color space, which better models human color perception than RGB.
+3. k-means clustering groups the pixels into dominant color clusters.
+4. Each cluster centroid is matched to the nearest named color using delta-E distance, a standard measure of perceptual color difference.
+5. Results are displayed as swatches with the color name and hex code.
+
+---
+
+## Local Setup
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) in your browser and upload any image to get started.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Project Structure
 
-## Learn More
+```
+color-reader/
+├── app/             # Next.js app router and main page
+├── lib/             # Color clustering and LAB matching logic
+└── public/          # Static assets
+```
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Author
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Alex Canizares — [LinkedIn](https://www.linkedin.com/in/canizaresalex/) · [Portfolio](https://my-portfolio-alexcanizares.vercel.app/)
