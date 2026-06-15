@@ -4,7 +4,7 @@ An accessible web app that identifies and names the dominant colors in any uploa
 
 Upload an image, and the app returns the top colors with their names, hex codes, and a visual swatch for each one.
 
-**Live demo:** _coming soon_
+**Live demo:** [color-reader-one.vercel.app](https://color-reader-one.vercel.app/)
 
 ---
 
@@ -22,7 +22,7 @@ Upload an image, and the app returns the top colors with their names, hex codes,
 
 | Layer | Technology |
 |---|---|
-| Framework | Next.js 15, TypeScript |
+| Framework | Next.js 16, TypeScript |
 | Styling | Tailwind CSS |
 | Color Science | k-means clustering, CIE LAB color space, delta-E matching |
 
